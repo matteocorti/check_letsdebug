@@ -1,0 +1,10 @@
+Requirements
+============
+
+- cURL
+
+Installation
+============
+
+Simply copy the plugin to your Nagios/Icinga plugin directory
+

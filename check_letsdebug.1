@@ -1,0 +1,52 @@
+.\" Process this file with
+.\" groff -man -Tascii check_letsdebug.1
+.\"
+.TH "check_letsdebug" 1 "July, 2021" "1.0.0" "USER COMMANDS"
+.SH NAME
+check_letsdebug \- checks rate limits of Let's Encrypt
+.SH SYNOPSIS
+.BR "check_letsdebug " "-d domain [OPTIONS]"
+.SH DESCRIPTION
+.B check_letsdebug
+A Nagios plugin to check the rate limits of Let's Encrypt
+.SH ARGUMENTS
+.TP
+.BR "-d,--domain" " domain"
+domain
+.SH OPTIONS
+.TP
+.BR "-d,--debug"
+produces debugging output (can be specified more than once)
+.TP
+.BR "   --debug-file" " file"
+writes the debug messages to file
+.TP
+.BR "-h,--help,-?"
+this help message
+.TP
+.BR "-t,--timeout"
+seconds timeout after the specified time (defaults to 120 seconds)
+.TP
+.BR "-v,--verbose"
+verbose output (can be specified more than once)
+.TP
+.BR "-V,--version"
+version
+.TP
+.BR "-4"
+forces IPv4
+.TP
+.BR "-6"
+forces IPv6
+.SH "SEE ALSO"
+curl(1), expect(1), timeout(1)
+.SH "EXIT STATUS"
+
+.SH BUGS
+Please report bugs to:
+
+https://github.com/matteocorti/check_letsdebug/issues
+.SH AUTHOR
+Matteo Corti (matteo (at) corti.li )
+See the AUTHORS file for the complete list of contributors
+
