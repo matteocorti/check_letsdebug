@@ -861,11 +861,9 @@ main() {
     # shellcheck disable=SC2086
     trap_with_arg cleanup ${SIGNALS}
 
-    verboselog "Checking $DOMAIN"
+    verboselog "Checking ${DOMAIN}"
 
-    debuglog "executing '${COMMAND}'"
-
-    TEST=$( curl -s --data '{"method":"http-01","domain":"'$DOMAIN'"}' -H 'content-type: application/json' https://letsdebug.net )
+    TEST=$( curl -s --data '{"method":"http-01","domain":"'"${DOMAIN}"'"}' -H 'content-type: application/json' https://letsdebug.net )
 
     debuglog "  output = ${TEST}"
 
@@ -874,29 +872,31 @@ main() {
     debuglog "Test ID = ${ID}"
 
     while true ; do
-    
+
         verboselog "  checking test ID ${ID}"
 
         debuglog "exeuting curl -s -H 'accept: application/json' \"https://letsdebug.net/${DOMAIN}/${ID}\""
-        
+
         RESULT=$( curl -s -H 'accept: application/json' "https://letsdebug.net/${DOMAIN}/${ID}" )
 
         debuglog "  ${RESULT}"
 
-        if ! echo $RESULT | grep -q -i processing ; then
+        if ! echo "${RESULT}" | grep -q -i processing ; then
             break
         fi
 
-        sleep 2
+        WAITTIME=5
+        verboselog "Waiting ${WAITTIME} seconds for test to complete"
+        sleep "${WAITTIME}"
 
     done
 
-    if echo $RESULT | grep -q 'problems' ; then
-        OUTPUT=$( echo $RESULT | sed 's/.*explanation":"//' | sed 's/","severity.*//' | sed 's/","detail.*//'  )
+    if echo "${RESULT}" | grep -q 'problems' ; then
+        OUTPUT=$( echo "${RESULT}" | sed 's/.*explanation":"//' | sed 's/","severity.*//' | sed 's/","detail.*//'  )
         debuglog "Critical output: ${OUTPUT}"
-        prepend_critical_message "${OUTPUT}"        
+        prepend_critical_message "${OUTPUT}"
     fi
-    
+
     # if errors exist at this point return
     if [ "${CRITICAL_MSG}" != "" ] ; then
         critical "${CRITICAL_MSG}"
