@@ -891,7 +891,11 @@ main() {
         fi
         debuglog "command output = $( cat "${OUTFILE}" )"
 
+        echo ------------------------------------------------------------------------------
+        cat $OUTFILE
+        
         if ! grep -q -i processing "${OUTFILE}" ; then
+            debuglog "Result available"
             break
         fi
 
@@ -901,6 +905,9 @@ main() {
 
     done
 
+    cat $OUTFILE
+    exit
+    
     if  grep -q 'problems' "${OUTFILE}" ; then
         OUTPUT=$( sed 's/.*explanation":"//' "${OUTFILE}" | sed 's/","severity.*//' | sed 's/","detail.*//'  )
         debuglog "Critical output: ${OUTPUT}"
