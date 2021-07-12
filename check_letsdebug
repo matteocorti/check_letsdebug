@@ -10,9 +10,6 @@
 # under the terms of GNU general public license (gpl) version 3.
 # See the LICENSE file for details.
 
-#### TO DO
-# Timeout
-
 
 ################################################################################
 # Constants
@@ -64,7 +61,6 @@ usage() {
     echo "Options:"
     echo "   -d,--debug                      produces debugging output (can be specified more than once)"
     echo "      --debug-file file            writes the debug messages to file"
-    echo "      --dig-bin path               path of the dig binary to be used"
     echo "   -h,--help,-?                    this help message"
     echo "      --proxy proxy                sets http_proxy and the s_client -proxy option"
     echo "      --temp dir                   directory where to store the temporary files"
@@ -881,7 +877,7 @@ main() {
     ID=$( sed 's/.*ID"://' "${OUTFILE}" | sed 's/}//' )
 
     debuglog "Test ID = ${ID}"
-
+    
     while true ; do
 
         verboselog "  checking test ID ${ID}"
@@ -901,7 +897,7 @@ main() {
 
         WAITTIME=5
         verboselog "Waiting ${WAITTIME} seconds for test to complete"
-        sleep "${WAITTIME}"
+        exec_with_timeout "sleep ${WAITTIME}"
 
     done
 
