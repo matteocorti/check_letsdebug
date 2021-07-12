@@ -767,8 +767,6 @@ main() {
         verboselog "disabling timeouts"
     fi
 
-    PERL="$(command -v perl 2> /dev/null)"
-
     if [ "${DEBUG}" -ge 1 ] ; then
 
         debuglog "check_letsdebug version: ${VERSION}"
@@ -863,11 +861,24 @@ main() {
 
     verboselog "Checking ${DOMAIN}"
 
-    TEST=$( curl -s --data '{"method":"http-01","domain":"'"${DOMAIN}"'"}' -H 'content-type: application/json' https://letsdebug.net )
+    create_temporary_file; OUTFILE=${TEMPFILE}
 
-    debuglog "  output = ${TEST}"
+    # the quoting of the " in the data part is pretty difficuly
+    # workaround: store the JSON data in a file
+    # see https://stackoverflow.com/questions/12583930/use-pipe-for-curl-data
 
-    ID=$( echo "${TEST}" | sed 's/.*ID"://' | sed 's/}//' )
+    create_temporary_file; JSON=${TEMPFILE}
+    echo '{"method":"http-01","domain":"'"${DOMAIN}"'"}' > "${JSON}"
+
+    if [ -n "${CURL_USER_AGENT}" ] ; then
+        exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent --user-agent '${CURL_USER_AGENT}' -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${OUTFILE}"
+    else
+        exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent --user-agent '${CURL_USER_AGENT}' -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${OUTFILE}"
+    fi
+
+    debuglog "command output = $( cat "${OUTFILE}" )"
+
+    ID=$( sed 's/.*ID"://' "${OUTFILE}" | sed 's/}//' )
 
     debuglog "Test ID = ${ID}"
 
