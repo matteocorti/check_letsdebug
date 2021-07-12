@@ -889,9 +889,9 @@ main() {
         debuglog "exeuting curl -s -H 'accept: application/json' \"https://letsdebug.net/${DOMAIN}/${ID}\""
 
         if [ -n "${CURL_USER_AGENT}" ] ; then
-            exec_with_timeout "curl -s --user-agent '${CURL_USER_AGENT}' -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${OUTFILE}"
+            exec_with_timeout "${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent '${CURL_USER_AGENT}' -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${OUTFILE}"
         else
-            exec_with_timeout "curl -s -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${OUTFILE}"
+            exec_with_timeout "${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${OUTFILE}"
         fi
         debuglog "command output = $( cat "${OUTFILE}" )"
 
