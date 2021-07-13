@@ -26,15 +26,16 @@ TEMPFILE=""
 
 ################################################################################
 # Variables
-STATUS_OK=0
-STATUS_WARNING=1
-STATUS_CRITICAL=2
-STATUS_UNKNOWN=3
-WARNING_MSG=""
-CRITICAL_MSG=""
 ALL_MSG=""
+CRITICAL_MSG=""
 DEBUG=0
 DEBUG_FILE=""
+ID=""
+STATUS_CRITICAL=2
+STATUS_OK=0
+STATUS_UNKNOWN=3
+STATUS_WARNING=1
+WARNING_MSG=""
 
 ################################################################################
 # Functions
@@ -61,6 +62,7 @@ usage() {
     echo "Options:"
     echo "   -d,--debug                      produces debugging output (can be specified more than once)"
     echo "      --debug-file file            writes the debug messages to file"
+    echo "      --id id                      retrieves the result of a previous test"
     echo "   -h,--help,-?                    this help message"
     echo "      --proxy proxy                sets http_proxy and the s_client -proxy option"
     echo "      --temp dir                   directory where to store the temporary files"
@@ -365,7 +367,9 @@ exec_with_timeout() {
     start_time=$( date +%s )
 
     debuglog "executing with timeout (${time}s): $1"
-    debuglog "  start time = ${start_time}"
+    debuglog "  output file = ${OUTFILE}"
+    debuglog "  error file  = ${ERRFILE}"
+    debuglog "  start time  = ${start_time}"
 
     if [ -n "${TIMEOUT_BIN}" ] ; then
 
@@ -600,6 +604,11 @@ parse_command_line_options() {
             --debug-file)
                 check_option_argument '--debug-file' "$2"
                 DEBUG_FILE="$2"
+                shift 2
+                ;;
+            --id)
+                check_option_argument '--id' "$2"
+                ID="$2"
                 shift 2
                 ;;
             --inetproto)
@@ -856,26 +865,29 @@ main() {
     trap_with_arg cleanup ${SIGNALS}
 
     verboselog "Checking ${DOMAIN}"
-
     create_temporary_file; OUTFILE=${TEMPFILE}
 
-    # the quoting of the " in the data part is pretty difficuly
-    # workaround: store the JSON data in a file
-    # see https://stackoverflow.com/questions/12583930/use-pipe-for-curl-data
+    if [ -z "${ID}" ] ; then
 
-    create_temporary_file; JSON=${TEMPFILE}
-    echo '{"method":"http-01","domain":"'"${DOMAIN}"'"}' > "${JSON}"
+        # the quoting of the " in the data part is pretty difficuly
+        # workaround: store the JSON data in a file
+        # see https://stackoverflow.com/questions/12583930/use-pipe-for-curl-data
 
-    if [ -n "${CURL_USER_AGENT}" ] ; then
-        exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent --user-agent '${CURL_USER_AGENT}' -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${OUTFILE}"
-    else
-        exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${OUTFILE}"
+        create_temporary_file; JSON=${TEMPFILE}
+        echo '{"method":"http-01","domain":"'"${DOMAIN}"'"}' > "${JSON}"
+
+        if [ -n "${CURL_USER_AGENT}" ] ; then
+            exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent --user-agent '${CURL_USER_AGENT}' -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${OUTFILE}"
+        else
+            exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${OUTFILE}"
+        fi
+
+        debuglog "command output = $( cat "${OUTFILE}" )"
+
+        ID=$( sed 's/.*ID"://' "${OUTFILE}" | sed 's/}//' )
+
     fi
-
-    debuglog "command output = $( cat "${OUTFILE}" )"
-
-    ID=$( sed 's/.*ID"://' "${OUTFILE}" | sed 's/}//' )
-
+        
     debuglog "Test ID = ${ID}"
     
     while true ; do
@@ -890,9 +902,6 @@ main() {
             exec_with_timeout "${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${OUTFILE}"
         fi
         debuglog "command output = $( cat "${OUTFILE}" )"
-
-        echo ------------------------------------------------------------------------------
-        cat $OUTFILE
         
         if ! grep -q -i processing "${OUTFILE}" ; then
             debuglog "Result available"
@@ -904,9 +913,6 @@ main() {
         exec_with_timeout "sleep ${WAITTIME}"
 
     done
-
-    cat $OUTFILE
-    exit
     
     if  grep -q 'problems' "${OUTFILE}" ; then
         OUTPUT=$( sed 's/.*explanation":"//' "${OUTFILE}" | sed 's/","severity.*//' | sed 's/","detail.*//'  )
