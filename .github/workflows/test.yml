@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - $default-branch
-      - development
-      - master
       - main
   # Run tests for any PRs
   pull_request:
