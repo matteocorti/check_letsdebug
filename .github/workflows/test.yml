@@ -148,7 +148,7 @@ jobs:
               && cpanm --sudo install Date::Parse \
               && uname -a \
               && make test \
-              && if command -v shellcheck > /dev/null 2>&1  ; then shellcheck ./check_letsdebug test/unit_tests.sh ; fi'
+              && if command -v shellcheck > /dev/null 2>&1  ; then shellcheck ./check_letsdebug ; fi'
 
   rpm:
     # The host should always be linux
