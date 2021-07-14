@@ -5,7 +5,7 @@ OUT=$( make rpm 2>&1 | grep ^Wrote )
 
 echo "${OUT}"
 
-RPM=$( echo "${OUT}" | grep /RPMS | grep -v debug | sed 's/.*\ //' )
+RPM=$( echo "${OUT}" | grep /RPMS | grep -v -- -debug | sed 's/.*\ //' )
 SRPM=$( echo "${OUT}" | grep SRPMS | sed 's/.*\ //' )
 
 echo "RPM:  ${RPM}"
