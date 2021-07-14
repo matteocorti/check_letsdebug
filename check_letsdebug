@@ -865,7 +865,7 @@ main() {
     trap_with_arg cleanup ${SIGNALS}
 
     verboselog "Checking ${DOMAIN}"
-    create_temporary_file; OUTFILE=${TEMPFILE}
+    create_temporary_file; CURL_OUTPUT=${TEMPFILE}
 
     if [ -z "${ID}" ] ; then
 
@@ -877,14 +877,14 @@ main() {
         echo '{"method":"http-01","domain":"'"${DOMAIN}"'"}' > "${JSON}"
 
         if [ -n "${CURL_USER_AGENT}" ] ; then
-            exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent --user-agent '${CURL_USER_AGENT}' -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${OUTFILE}"
+            exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent --user-agent '${CURL_USER_AGENT}' -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${CURL_OUTPUT}"
         else
-            exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${OUTFILE}"
+            exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${CURL_OUTPUT}"
         fi
 
-        debuglog "command output = $( cat "${OUTFILE}" )"
+        debuglog "command output = $( cat "${CURL_OUTPUT}" )"
 
-        ID=$( sed 's/.*ID"://' "${OUTFILE}" | sed 's/}//' )
+        ID=$( sed 's/.*ID"://' "${CURL_OUTPUT}" | sed 's/}//' )
 
     fi
         
@@ -897,13 +897,14 @@ main() {
         debuglog "exeuting curl -s -H 'accept: application/json' \"https://letsdebug.net/${DOMAIN}/${ID}\""
 
         if [ -n "${CURL_USER_AGENT}" ] ; then
-            exec_with_timeout "${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent '${CURL_USER_AGENT}' -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${OUTFILE}"
+            exec_with_timeout "${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent '${CURL_USER_AGENT}' -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${CURL_OUTPUT}"
         else
-            exec_with_timeout "${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${OUTFILE}"
+            exec_with_timeout "${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${CURL_OUTPUT}"
         fi
-        debuglog "command output = $( cat "${OUTFILE}" )"
+
+        debuglog "command output = $( cat "${CURL_OUTPUT}" )"
         
-        if ! grep -q -i processing "${OUTFILE}" ; then
+        if ! grep -q -i processing "${CURL_OUTPUT}" ; then
             debuglog "Result available"
             break
         fi
@@ -914,8 +915,8 @@ main() {
 
     done
     
-    if  grep -q 'problems' "${OUTFILE}" ; then
-        OUTPUT=$( sed 's/.*explanation":"//' "${OUTFILE}" | sed 's/","severity.*//' | sed 's/","detail.*//'  )
+    if  grep -q 'problems' "${CURL_OUTPUT}" ; then
+        OUTPUT=$( sed 's/.*explanation":"//' "${CURL_OUTPUT}" | sed 's/","severity.*//' | sed 's/","detail.*//'  )
         debuglog "Critical output: ${OUTPUT}"
         prepend_critical_message "${OUTPUT}"
     fi
