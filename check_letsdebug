@@ -887,9 +887,9 @@ main() {
         ID=$( sed 's/.*ID"://' "${CURL_OUTPUT}" | sed 's/}//' )
 
     fi
-        
+
     debuglog "Test ID = ${ID}"
-    
+
     while true ; do
 
         verboselog "  checking test ID ${ID}"
@@ -903,7 +903,7 @@ main() {
         fi
 
         debuglog "command output = $( cat "${CURL_OUTPUT}" )"
-        
+
         if ! grep -q -i processing "${CURL_OUTPUT}" ; then
             debuglog "Result available"
             break
@@ -914,7 +914,7 @@ main() {
         exec_with_timeout "sleep ${WAITTIME}"
 
     done
-    
+
     if  grep -q 'problems' "${CURL_OUTPUT}" ; then
         OUTPUT=$( sed 's/.*explanation":"//' "${CURL_OUTPUT}" | sed 's/","severity.*//' | sed 's/","detail.*//'  )
         debuglog "Critical output: ${OUTPUT}"
