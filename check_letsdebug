@@ -314,14 +314,8 @@ warning() {
 # Param
 #   $1 message
 unknown() {
-    if [ -n "${HOST_NAME}" ] ; then
-        if [ -n "${SNI}" ] ; then
-            tmp=" ${SNI}"
-        elif [ -n "${FILE}" ] ; then
-            tmp=" ${FILE}"
-        else
-            tmp=" ${HOST_NAME}"
-        fi
+    if [ -n "${DOMAIN}" ] ; then
+        tmp=" ${DOMAIN}"
     fi
     remove_temporary_files
     printf '%s UNKNOWN%s: %s\n' "${SHORTNAME}" "${tmp}" "$1"
