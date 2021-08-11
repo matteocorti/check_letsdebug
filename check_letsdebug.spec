@@ -1,4 +1,4 @@
-%define version          1.0.0
+%define version          1.1.0
 %define release          0
 %define sourcename       check_letsdebug
 %define packagename      nagios-plugins-check_letsdebug
@@ -42,5 +42,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/%{sourcename}.1*
 
 %changelog
+* Wed Aug  11 2021 Matteo Corti <matteo@corti.li> - 1.1.0-0
+- Updated to 1.1.0
+
 * Wed Jun  23 2021 Matteo Corti <matteo@corti.li> - 1.0.0-0
 - Initial release

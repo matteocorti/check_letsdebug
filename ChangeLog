@@ -1,3 +1,7 @@
+2021-08-11  Matteo Corti  <matteo@corti.li>
+
+	* check_letsdebug (main): Unknown status in case of service disruption
+
 2021-07-08  Matteo Corti  <matteo@corti.li>
 
 	* check_letsdebug: initial release
