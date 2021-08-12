@@ -1,5 +1,5 @@
 %define version          1.1.0
-%define release          0
+%define release          1
 %define sourcename       check_letsdebug
 %define packagename      nagios-plugins-check_letsdebug
 %define nagiospluginsdir %{_libdir}/nagios/plugins
