@@ -19,7 +19,7 @@ BuildRoot: %{_tmppath}/%{packagename}-%{version}-%{release}-root-%(%{__id_u} -n)
 URL:       https://github.com/matteocorti/check_letsdebug
 Source:    https://github.com/matteocorti/check_letsdebug/releases/download/v%{version}/check_letsdebug-%{version}.tar.gz
 
-Requires:  nagios-plugins expect perl(Date::Parse)
+Requires:  curl
 
 %description
 A shell script (that can be used as a Nagios plugin) to check an SSL/TLS connection
@@ -42,6 +42,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/%{sourcename}.1*
 
 %changelog
+* Thu Aug  12 2021 Matteo Corti <matteo@corti.li> - 1.1.0-1
+- Fixed the RPM dependencies
+
 * Wed Aug  11 2021 Matteo Corti <matteo@corti.li> - 1.1.0-0
 - Updated to 1.1.0
 
