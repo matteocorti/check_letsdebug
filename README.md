@@ -33,6 +33,20 @@ Options:
 Report bugs to https://github.com/matteocorti/check_letsdebug/issues
 ```
 
+## Required Software
+
+To run the script
+
+ * cURL
+
+To build a release you additionaly need
+
+ * bzip2
+ * make
+
+And to check the code
+ 
+  * [ShellCheck](https://www.shellcheck.net)
 
 ## Bugs
 
