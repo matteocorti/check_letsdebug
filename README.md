@@ -45,7 +45,7 @@ To build a release you additionaly need
  * make
 
 And to check the code
- 
+
   * [ShellCheck](https://www.shellcheck.net)
 
 ## Bugs
