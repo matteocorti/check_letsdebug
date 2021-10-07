@@ -4,7 +4,8 @@ DIST_DIR=$(PLUGIN)-$(VERSION)
 DIST_FILES=AUTHORS COPYING ChangeLog INSTALL Makefile NEWS README.md VERSION $(PLUGIN) $(PLUGIN).spec COPYRIGHT ${PLUGIN}.1
 YEAR=`date +"%Y"`
 MONTH_YEAR=`date +"%B, %Y"`
-FORMATTED_FILES=AUTHORS COPYING ChangeLog INSTALL Makefile NEWS README.md VERSION $(PLUGIN) $(PLUGIN).spec COPYRIGHT ${PLUGIN}.1 .github/workflows/*
+FORMATTED_FILES=AUTHORS COPYING ChangeLog INSTALL Makefile NEWS README.md VERSION $(PLUGIN) $(PLUGIN).spec COPYRIGHT ${PLUGIN}.1 .github/workflows/* prepare_rpm.sh publish_release.sh
+SCRIPTS=$(PLUGIN) prepare_rpm.sh publish_release.sh
 
 dist: version_check formatting_check copyright_check shellcheck
 	rm -rf $(DIST_DIR) $(DIST_DIR).tar.gz
@@ -38,6 +39,19 @@ formatting_check:
 
 remove_blanks:
 	sed -i '' 's/[[:blank:]]*$$//' $(FORMATTED_FILES)
+
+SHFMT= := $(shell command -v shfmt 2> /dev/null)
+format:
+ifndef SHFMT
+	echo "No shfmt installed"
+else
+# -p POSIX
+# -w write to file
+# -s simplify
+# -i 4 indent with 4 spaces
+	shfmt -p -w -s -i 4 $(SCRIPTS)
+endif
+
 
 clean:
 	rm -f *~
