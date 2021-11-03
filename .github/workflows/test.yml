@@ -55,6 +55,7 @@ jobs:
           - 'fedora:32'
           - 'fedora:33'
           - 'fedora:34'
+          - 'fedora:35'
         include:
           - distro: 'debian:testing'
             pre: >-
@@ -96,6 +97,11 @@ jobs:
               apk upgrade &&
               apk add -U bash &&
               apk add nmap shellcheck curl sudo perl make wget bzip2 file
+          - distro: 'fedora:35'
+            pre: >-
+              dnf upgrade -y &&
+              dnf install -y hostname &&
+              dnf install -y nmap ShellCheck curl sudo perl make bzip2 file
           - distro: 'fedora:34'
             pre: >-
               dnf upgrade -y &&
@@ -150,7 +156,12 @@ jobs:
           - 'fedora:32'
           - 'fedora:33'
           - 'fedora:34'
+          - 'fedora:35'
         include:
+          - distro: 'fedora:35'
+            pre: >-
+              dnf install -y hostname &&
+              dnf install -y ShellCheck curl sudo make bzip2 rpm-build
           - distro: 'fedora:34'
             pre: >-
               dnf install -y hostname &&
