@@ -50,11 +50,9 @@ jobs:
           - 'ubuntu:16.04'
           - 'ubuntu:18.04'
           - 'ubuntu:20.04'
-          - 'ubuntu:20.10'
           - 'alpine:3.13'
           - 'alpine:edge'
           - 'centos:7'
-          - 'centos:8'
           - 'fedora:32'
           - 'fedora:33'
           - 'fedora:34'
@@ -69,10 +67,6 @@ jobs:
               apt-get update &&
               DEBIAN_FRONTEND=noninteractive apt-get -y install nmap shellcheck curl sudo perl make bzip2 file
           - distro: 'debian:9'
-            pre: >-
-              apt-get update &&
-              DEBIAN_FRONTEND=noninteractive apt-get -y install nmap shellcheck curl sudo perl make bzip2 file
-          - distro: 'ubuntu:20.10'
             pre: >-
               apt-get update &&
               DEBIAN_FRONTEND=noninteractive apt-get -y install nmap shellcheck curl sudo perl make bzip2 file
@@ -124,11 +118,6 @@ jobs:
             pre: >-
               yum upgrade -y &&
               yum install -y nmap curl sudo perl make bzip2 file &&
-              scversion="stable"; curl -Ls "https://github.com/koalaman/shellcheck/releases/download/${scversion?}/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv && cp "shellcheck-${scversion}/shellcheck" /usr/bin/
-          - distro: 'centos:8'
-            pre: >-
-              dnf upgrade -y &&
-              dnf install -y nmap curl sudo perl make bzip2 file &&
               scversion="stable"; curl -Ls "https://github.com/koalaman/shellcheck/releases/download/${scversion?}/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv && cp "shellcheck-${scversion}/shellcheck" /usr/bin/
     steps:
       - name: Git clone repository
