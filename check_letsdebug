@@ -178,7 +178,8 @@ remove_temporary_files() {
     debuglog "cleaning up temporary files"
     # shellcheck disable=SC2086
     if [ -n "${TEMPORARY_FILES}" ]; then
-        debuglog "$(echo "${TEMPORARY_FILES}" | tr '\ ' '\n')"
+        TEMPORARY_FILES_TEMP="$(echo "${TEMPORARY_FILES}" | tr '\ ' '\n')"
+        debuglog "${TEMPORARY_FILES_TEMP}"
         rm -f ${TEMPORARY_FILES}
     fi
 }
@@ -507,7 +508,8 @@ add_performance_data() {
 #   $1 variable name (e.g. SHORTNAME)
 #   $2 variable value (e.g. LETSDEBUG)
 var_for_sed() {
-    echo "s|%$1%|$(echo "$2" | sed -e 's#|#\\\\|#g')|g"
+    VALUE_TEMP="$(echo "$2" | sed -e 's#|#\\\\|#g')"
+    echo "s|%$1%|${VALUE_TEMP}|g"
 }
 
 ################################################################################
@@ -532,7 +534,7 @@ ascii_grep() {
 #  $2 next command line parameter
 check_option_argument() {
 
-    if [ -z "$2" ] || [ "${2%${2#?}}"x = '-x' ]; then
+    if [ -z "$2" ] || [ "${2%"${2#?}"}"x = '-x' ]; then
         unknown "'${1}' requires an argument"
     fi
 
@@ -638,6 +640,7 @@ parse_command_line_options() {
             # we try to check for grouped variables
             OPTION="${1}"
             # if the option begins with a single dash and it's longer than one character
+            # shellcheck disable=SC2312
             if ! echo "${OPTION}" | grep -q -- '^--' &&
                 [ "$(echo "${OPTION}" | wc -c | sed 's/\ //g')" -gt 3 ]; then
                 if [ -n "${DEBUG}" ]; then
@@ -732,7 +735,8 @@ main() {
         CURL_BIN=${PROG}
 
         debuglog "cURL available: ${CURL_BIN}"
-        debuglog "$(${CURL_BIN} --version)"
+        CURL_VERSION="$(${CURL_BIN} --version)"
+        debuglog "${CURL_VERSION}"
 
     else
         # we check if the provided binary actually works
@@ -765,7 +769,8 @@ main() {
 
         debuglog "check_letsdebug version: ${VERSION}"
 
-        debuglog " System info: $(uname -a)"
+        UNAME_TEMP="$(uname -a)"
+        debuglog " System info: ${UNAME_TEMP}"
 
     fi
 
@@ -873,7 +878,8 @@ main() {
             exec_with_timeout "cat ${JSON} | ${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'content-type: application/json' -X POST --data-binary @- https://letsdebug.net" "${CURL_OUTPUT}"
         fi
 
-        debuglog "command output = $(cat "${CURL_OUTPUT}")"
+        CURL_OUTPUT_TEMP="$(cat "${CURL_OUTPUT}")"
+        debuglog "command output = ${CURL_OUTPUT})"
 
         ID=$(sed 's/.*ID"://' "${CURL_OUTPUT}" | sed 's/}//')
 
@@ -893,7 +899,8 @@ main() {
             exec_with_timeout "${CURL_BIN} ${CURL_PROXY} ${CURL_PROXY_ARGUMENT} ${INETPROTO} --silent -H 'accept: application/json' https://letsdebug.net/${DOMAIN}/${ID}" "${CURL_OUTPUT}"
         fi
 
-        debuglog "command output = $(cat "${CURL_OUTPUT}")"
+        CURL_OUTPUT_TEMP="$(cat "${CURL_OUTPUT}")"
+        debuglog "command output = ${CURL_OUTPUT_TEMP}"
 
         if ! grep -q -i processing "${CURL_OUTPUT}"; then
             debuglog "Result available"
@@ -935,9 +942,12 @@ main() {
         FORMAT="%SHORTNAME% %DOMAIN% OK"
     fi
 
+    DOMAIN_TEMP="$(var_for_sed DOMAIN "${DOMAIN}")"
+    SHORTNAME_TEMP="$(var_for_sed SHORTNAME "${SHORTNAME}")"
+
     echo "${FORMAT}" | sed \
-        -e "$(var_for_sed SHORTNAME "${SHORTNAME}")" \
-        -e "$(var_for_sed DOMAIN "${DOMAIN}")"
+        -e "${SHORTNAME_TEMP}" \
+        -e "${DOMAIN_TEMP}"
 
     remove_temporary_files
 
