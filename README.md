@@ -39,7 +39,7 @@ To run the script
 
  * cURL
 
-To build a release you additionaly need
+To build a release you additionally need
 
  * bzip2
  * make

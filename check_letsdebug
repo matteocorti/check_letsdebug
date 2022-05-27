@@ -368,7 +368,7 @@ exec_with_timeout() {
 
         debuglog "$(printf '%s %s %s\n' "${TIMEOUT_BIN}" "${time}" "${command}")"
 
-        # We execute timeout in the backgroud so that it can be relay a signal to 'timeout'
+        # We execute timeout in the background so that it can be relay a signal to 'timeout'
         # https://unix.stackexchange.com/questions/57667/why-cant-i-kill-a-timeout-called-from-a-bash-script-with-a-keystroke/57692#57692
         eval "${TIMEOUT_BIN} ${time} ${command} &" >"${OUTFILE}" 2>"${ERRFILE}"
         TIMEOUT_PID=$!
@@ -378,7 +378,7 @@ exec_with_timeout() {
         # return codes
         # https://www.gnu.org/software/coreutils/manual/coreutils.html#timeout-invocation
 
-        # because of the execution in the backgroud we get a 137 for a timeout
+        # because of the execution in the background we get a 137 for a timeout
         if [ "${RET}" -eq 137 ] || [ "${RET}" -eq 124 ]; then
             prepend_critical_message "Timeout after ${time} seconds"
             critical "${SHORTNAME} CRITICAL: Timeout after ${time} seconds"
@@ -775,7 +775,7 @@ main() {
     fi
 
     if [ -n "${PROXY}" ] && [ -n "${NO_PROXY}" ]; then
-        unknown "Only one of --proxy or --no_proxy can be specfied"
+        unknown "Only one of --proxy or --no_proxy can be specified"
     fi
 
     ################################################################################
