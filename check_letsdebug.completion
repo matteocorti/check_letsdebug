@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+_check_letsdebug() {
+
+    local cur prev opts
+
+    COMPREPLY=()
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD - 1]}"
+
+    #
+    # list of command line options
+    #   only the autocompletion with long options is implemented: long options are more readable and quick to enter since we are
+    #   using autocompletion.
+    #
+    opts="--domain --debug --debug-file --help --proxy --temp --timeout --verbose --version -4 -6"
+
+    if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]]; then
+        # shellcheck disable=2207
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+        return 0
+    fi
+
+    #
+    # options with arguments: if the option requires an argument we try to autocomplete it if possible
+    #
+    case "${prev}" in
+
+    # options with files or directories as argument
+    --debug-file | --temp)
+        _filedir
+        ;;
+
+    # options with hosts (domains) as argument
+    -D | --domain)
+        _known_hosts_real "${cur}"
+        # if present use the check_ssl_cache
+        if [[ -r ~/.check_ssl_cert-cache ]]; then
+            # concatenate the array with the cached hosts: https://stackoverflow.com/questions/31143874/how-to-concatenate-arrays-in-bash
+            # shellcheck disable=2207
+            COMPREPLY+=($(compgen -W "$(tr <~/.check_ssl_cert-cache "\n" ' ')" -- "${cur}"))
+        fi
+        ;;
+
+    *) ;;
+
+    esac
+
+}
+
+complete -F _check_letsdebug check_letsdebug

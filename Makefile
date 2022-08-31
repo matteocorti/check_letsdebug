@@ -1,7 +1,7 @@
 PLUGIN=check_letsdebug
 VERSION=`cat VERSION`
 DIST_DIR=$(PLUGIN)-$(VERSION)
-DIST_FILES=AUTHORS COPYING ChangeLog INSTALL Makefile NEWS README.md VERSION $(PLUGIN) $(PLUGIN).spec COPYRIGHT ${PLUGIN}.1
+DIST_FILES=AUTHORS COPYING ChangeLog INSTALL Makefile NEWS README.md VERSION $(PLUGIN) $(PLUGIN).spec COPYRIGHT ${PLUGIN}.1 ${PLUGIN}.completion
 YEAR=`date +"%Y"`
 MONTH_YEAR=`date +"%B, %Y"`
 FORMATTED_FILES=AUTHORS COPYING ChangeLog INSTALL Makefile NEWS README.md VERSION $(PLUGIN) $(PLUGIN).spec COPYRIGHT ${PLUGIN}.1 .github/workflows/* prepare_rpm.sh publish_release.sh
@@ -17,10 +17,25 @@ dist: version_check formatting_check copyright_check shellcheck
 	env COPYFILE_DISABLE=1 tar cfj $(DIST_DIR).tar.bz2 $(DIST_DIR)
 
 install:
+ifndef DESTDIR
+	echo "Please define DESTDIR and MANDIR variables with the installation targets"
+	echo "e.g, make DESTDIR=/nagios/plugins/dir MANDIR=/nagios/plugins/man/dir install"
+else
 	mkdir -p $(DESTDIR)
 	install -m 755 $(PLUGIN) $(DESTDIR)
 	mkdir -p ${MANDIR}/man1
 	install -m 644 ${PLUGIN}.1 ${MANDIR}/man1/
+endif
+ifdef COMPLETIONDIR
+	mkdir -p $(COMPLETIONDIR)
+	install -m 644 check_ssl_cert.completion $(COMPLETIONDIR)/check_ssl_cert
+endif
+
+COMPLETIONS_DIR := $(shell pkg-config --variable=completionsdir bash-completion)
+install_bash_completion:
+ifdef COMPLETIONS_DIR
+	cp $(PLUGIN).completion $(COMPLETIONS_DIR)/$(PLUGIN)
+endif
 
 version_check:
 	grep -q "VERSION\ *=\ *[\'\"]*$(VERSION)" $(PLUGIN)
