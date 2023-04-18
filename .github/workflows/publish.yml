@@ -19,9 +19,9 @@ jobs:
         distro:
           - 'centos:7'
           - 'fedora:37'
-          - 'fedora:36'
+          - 'fedora:38'
         include:
-          - distro: 'fedora:36'
+          - distro: 'fedora:38'
             pre: >-
               dnf install -y hostname &&
               dnf install -y nmap ShellCheck curl sudo make bzip2 rpm-build openssh-clients
