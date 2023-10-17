@@ -18,14 +18,14 @@ jobs:
       matrix:
         distro:
           - 'centos:7'
-          - 'fedora:37'
+          - 'fedora:39'
           - 'fedora:38'
         include:
           - distro: 'fedora:38'
             pre: >-
               dnf install -y hostname &&
               dnf install -y nmap ShellCheck curl sudo make bzip2 rpm-build openssh-clients
-          - distro: 'fedora:37'
+          - distro: 'fedora:39'
             pre: >-
               dnf install -y hostname &&
               dnf install -y nmap ShellCheck curl sudo make bzip2 rpm-build openssh-clients
