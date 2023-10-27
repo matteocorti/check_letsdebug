@@ -89,6 +89,10 @@ jobs:
             pre: >-
               apt-get update &&
               DEBIAN_FRONTEND=noninteractive apt-get -y install nmap shellcheck curl sudo perl make bzip2 file
+          - distro: 'ubuntu:22.04'
+            pre: >-
+              apt-get update &&
+              DEBIAN_FRONTEND=noninteractive apt-get -y install nmap shellcheck curl sudo perl make bzip2 file
           - distro: 'alpine:edge'
             pre: >-
               apk update &&
