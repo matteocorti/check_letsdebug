@@ -58,7 +58,7 @@ jobs:
           - 'alpine:3.13'
           - 'alpine:edge'
           - 'centos:7'
-          - 'fedora:38'
+          - 'fedora:40'
           - 'fedora:39'
         include:
           - distro: 'debian:testing'
@@ -110,7 +110,7 @@ jobs:
               dnf upgrade -y &&
               dnf install -y hostname &&
               dnf install -y nmap ShellCheck curl sudo perl make bzip2 file
-          - distro: 'fedora:38'
+          - distro: 'fedora:40'
             pre: >-
               dnf upgrade -y &&
               dnf install -y hostname &&
@@ -146,9 +146,9 @@ jobs:
         distro:
           - 'centos:7'
           - 'fedora:39'
-          - 'fedora:38'
+          - 'fedora:40'
         include:
-          - distro: 'fedora:38'
+          - distro: 'fedora:40'
             pre: >-
               dnf install -y hostname &&
               dnf install -y ShellCheck curl sudo make bzip2 rpm-build
