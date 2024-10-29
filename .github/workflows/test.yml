@@ -56,7 +56,6 @@ jobs:
           - 'ubuntu:22.04'
           - 'alpine:3.13'
           - 'alpine:edge'
-          - 'centos:7'
           - 'fedora:40'
           - 'fedora:39'
         include:
@@ -114,11 +113,6 @@ jobs:
               dnf upgrade -y &&
               dnf install -y hostname &&
               dnf install -y nmap ShellCheck curl sudo perl make bzip2 file
-          - distro: 'centos:7'
-            pre: >-
-              yum upgrade -y &&
-              yum install -y nmap curl sudo perl make bzip2 file &&
-              scversion="stable"; curl -Ls "https://github.com/koalaman/shellcheck/releases/download/${scversion?}/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv && cp "shellcheck-${scversion}/shellcheck" /usr/bin/
     steps:
       - name: Git clone repository
         uses: actions/checkout@v3
@@ -143,7 +137,6 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - 'centos:7'
           - 'fedora:39'
           - 'fedora:40'
         include:
@@ -155,10 +148,6 @@ jobs:
             pre: >-
               dnf install -y hostname &&
               dnf install -y ShellCheck curl sudo make bzip2 rpm-build
-          - distro: 'centos:7'
-            pre: >-
-              yum install -y curl sudo make bzip2 rpm-build &&
-              scversion="stable"; curl -Ls "https://github.com/koalaman/shellcheck/releases/download/${scversion?}/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv && cp "shellcheck-${scversion}/shellcheck" /usr/bin/
     steps:
       - name: Git clone repository
         uses: actions/checkout@v3
