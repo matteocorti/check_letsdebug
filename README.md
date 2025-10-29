@@ -1,5 +1,5 @@
 
- &copy; Matteo Corti, 2021-2024
+ &copy; Matteo Corti, 2021-2025
   see AUTHORS for the complete list of contributors
 
 # check\_letsdebug
