@@ -92,14 +92,9 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - 'fedora:39'
-          - 'fedora:40'
+          - 'fedora:latest'
         include:
-          - distro: 'fedora:40'
-            pre: >-
-              dnf install -y hostname &&
-              dnf install -y ShellCheck curl sudo make bzip2 rpm-build
-          - distro: 'fedora:39'
+          - distro: 'fedora:latest'
             pre: >-
               dnf install -y hostname &&
               dnf install -y ShellCheck curl sudo make bzip2 rpm-build
